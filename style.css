@@ -1,0 +1,194 @@
+/* --- Styles copied directly from Shiny UI --- */
+        
+/* Background image applied to main-panel using pseudo-element */
+.main-panel { position: relative; }
+.main-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://biopathogenix.com/wp-content/uploads/2021/07/BioPathogenix-Horizontal-1.svg');
+    background-repeat: no-repeat;
+    background-position: center 390px;
+    background-size: contain;
+    opacity: 0.15; /* <-- ADJUST OPACITY HERE (0.0 to 1.0) */
+    z-index: -1;
+}
+
+/* General UI */
+body { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f7f9fc; color: #122b40; margin: 0; }
+.container-fluid { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+.header-logo { display:flex; align-items:center; gap:12px; padding: 14px 0; }
+.logo-icon { font-size: 44px; }
+.logo-text { font-size: 28px; font-weight:700; color:#0b4f7a; letter-spacing:0.5px; }
+hr { border: none; height: 1px; background-color: rgba(11,79,122,0.12); margin: 0; }
+
+.info-row { display:flex; justify-content:space-between; gap:12px; margin: 10px 0 20px; align-items:center; }
+.info-row .form-group { margin-bottom:0; }
+.info-row label { font-weight:600; color:#163a56; margin-bottom:4px; display:block; }
+.info-row input[type='text'] { 
+    width: 220px; 
+    padding: 6px 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    font-size: 14px;
+}
+
+.grid-container { background: white; padding: 14px; border-radius: 8px; box-shadow: 0 1px 6px rgba(15,40,60,0.06); position: relative; z-index: 1; }
+.grid-table { border-collapse: collapse; width: 100%; }
+.grid-table th, .grid-table td { text-align:center; vertical-align: middle; padding: 6px; border: 1px solid #e6eef6; }
+.grid-table thead th { background: #f1f7fb; font-weight:700; color: #0b4f7a; }
+.grid-table td:first-child, .grid-table th:first-child { background: #f8fbfd; font-weight:600; width: 38px; }
+
+/* compact plate input cells */
+.plate-cell {
+    width: 56px;
+    height: 36px;
+    padding: 3px 6px;
+    box-sizing: border-box;
+    text-align: center;
+    border: 1px solid #cfe3f3;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #ffffff;
+}
+
+.control-row { display:flex; gap:12px; align-items:center; margin-top:12px; flex-wrap:wrap; }
+.control-row .control { min-width:160px; }
+.control-row .control input[type="text"],
+.control-row .control input[type="number"],
+.control-row .control select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+.control-row .control label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 3px;
+}
+
+.download-button-container { text-align:center; margin-top: 18px; padding-top: 4px; }
+
+/* General Button Styles */
+button {
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.btn-primary { background-color:#0b63a3; border-color:#0b63a3; color: white; }
+.btn-primary:hover { background-color:#095288; border-color:#095288; }
+.btn-danger { background-color:#c43b31; border-color:#b83229; color: white; }
+.btn-danger:hover { background-color:#a82f26; border-color:#a82f26; }
+button.btn-lg { padding: 10px 16px; font-size: 16px; }
+
+.legend-box { display:inline-block; padding:6px 10px; border-radius:6px; margin:4px; color:#072033; font-weight:600; }
+
+/* Row/Col classes for layout */
+.layout-row { display: flex; gap: 16px; margin-top: 12px; }
+.layout-col-4 { flex: 0 0 33.33%; }
+.layout-col-6 { flex: 0 0 50%; }
+.layout-col-4 label, .layout-col-6 label {
+     display: block;
+     font-size: 13px;
+     font-weight: 600;
+     margin-bottom: 3px;
+}
+.layout-col-4 input, .layout-col-6 input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+@media (max-width: 800px) {
+    .info-row { flex-direction: column; align-items:flex-start; gap:8px; }
+    .plate-cell { width:44px; height:32px; font-size:13px; }
+    .control-row { flex-direction: column; align-items: stretch; }
+    .layout-row { flex-direction: column; }
+}
+
+/* --- New styles for HTML/JS conversion --- */
+
+/* Hidden area for generating the download image */
+#printable-area {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    background: #ffffff;
+    padding: 25px;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #122b40;
+}
+#printable-area h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0b4f7a;
+    margin: 0 0 10px 0;
+}
+#printable-area h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 20px 0;
+}
+#print-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+#print-table th, #print-table td {
+    border: 1px solid #333;
+    text-align: center;
+    vertical-align: middle;
+    width: 60px;
+    height: 40px;
+    padding: 5px;
+    box-sizing: border-box;
+    /* Font size will be set by JS */
+}
+#print-table th {
+    background: #f1f7fb;
+    font-weight: 700;
+    color: #0b4f7a;
+}
+#print-table td.row-header {
+    background: #f8fbfd;
+    font-weight: 700;
+    width: 35px;
+}
+#printable-area .legend-print-item {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 8px;
+    margin-top: 15px;
+}
+#printable-area .legend-print-swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-right: 6px;
+    border: 1px solid rgba(0,0,0,0.08);
+}
+#printable-area .legend-print-label {
+    font-size: 12px;
+    vertical-align: middle;
+}
+#date_input {
+  min-width: 160px;
+}
+#open_date_picker {
+  cursor: pointer;
+}

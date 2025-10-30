@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioPathogenix — Plate Layout</title>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibjNQVbXlJmMotDNVXGscYTNHY8PMAVA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+
+    <div class="main-panel">
+        <div class="container-fluid">
+            <div class="header-logo">
+                <span class="logo-icon">🧬</span>
+                <span class="logo-text">BioPathogenix — Plate Layout</span>
+            </div>
+            <hr>
+
+            <div class="info-row">
+    <div style="display:flex; align-items:center; gap:8px;">
+	    <label for="date_input" style="white-space:nowrap;">DATE:</label>
+	    <!-- native date input shows a clickable calendar on most browsers -->
+	    <input type="date" id="date_input" placeholder="MM/DD/YYYY" style="padding:6px;">
+	    <!-- little button that focuses the date input (optional UX nicety) -->
+	    <button type="button" id="open_date_picker" title="Open date picker" style="padding:6px 8px;">📅</button>
+	</div>
+
+                <div>
+                    <label for="plate_input">PLATE:</label>
+                    <input type="text" id="plate_input" placeholder="Plate ID (e.g., P1234)">
+                </div>
+            </div>
+
+            <div class="grid-container">
+                <table class="table grid-table">
+                    <thead>
+                        <tr id="table-header-row">
+                            <th></th>
+                            </tr>
+                    </thead>
+                    <tbody id="plate-tbody">
+                    </tbody>
+                </table>
+
+                <div class="control-row">
+                    <div class="control">
+                        <label for="sel_start">Selection start (e.g., A1):</label>
+                        <input type="text" id="sel_start" value="A1">
+                    </div>
+                    <div class="control">
+                        <label for="sel_end">Selection end (e.g., A12):</label>
+                        <input type="text" id="sel_end" value="A1">
+                    </div>
+                    <div class="control" style="align-self: flex-end;">
+                        <button id="copy_sel_btn" class="btn-primary">Copy Selection</button>
+                    </div>
+                    <div class="control">
+                        <label for="paste_target">Paste target (start cell):</label>
+                        <input type="text" id="paste_target" value="A1">
+                    </div>
+                    <div class="control" style="align-self: flex-end;">
+                        <button id="paste_sel_btn" class="btn-primary">Paste Selection</button>
+                    </div>
+                </div>
+
+                <div class="control-row" style="border-top: 1px solid #e6eef6; padding-top: 12px;">
+                    <div class="control">
+                        <label for="pattern_type">Pattern type:</label>
+                        <select id="pattern_type">
+                            <option>Repeat value</option>
+                            <option>Sequence row-wise</option>
+                            <option>Sequence column-wise</option>
+                        </select>
+                    </div>
+                    <div class="control">
+                        <label for="pattern_repeat_value">Repeat value (for Repeat):</label>
+                        <input type="text" id="pattern_repeat_value" value="X">
+                    </div>
+                    <div class="control">
+                        <label for="pattern_start">Sequence start (numeric):</label>
+                        <input type="number" id="pattern_start" value="1">
+                    </div>
+                    <div class="control">
+                        <label for="pattern_step">Sequence step:</label>
+                        <input type="number" id="pattern_step" value="1">
+                    </div>
+                    <div class="control" style="align-self: flex-end;">
+                         <button id="pattern_fill_btn" class="btn-primary">Apply Pattern to Selection</button>
+                    </div>
+                    <div class="control" style="align-self: flex-end;">
+                         <button id="clear_sel_btn" class="btn-danger">Clear Selection</button>
+                    </div>
+                </div>
+
+                <br>
+                <div class="download-button-container">
+                    <div class="layout-row">
+                        <div class="layout-col-4">
+                            <label for="font_size">Cell Font Size (for Download):</label>
+                            <input type="range" id="font_size" min="1" max="8" value="3.5" step="0.1" style="width: 100%;">
+                        </div>
+                        <div class="layout-col-4" style="align-self: flex-end; text-align: center;">
+                            <button id="downloadImage" class="btn-primary btn-lg">Download as PNG</button>
+                        </div>
+                        <div class="layout-col-4" style="align-self: flex-end; text-align: center;">
+                            <button id="refresh_legend">Refresh Legend</button>
+                        </div>
+                    </div>
+                    <br>
+                    <h5>Legend:</h5>
+                    <div id="legend_ui"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="printable-area"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
