@@ -7,7 +7,6 @@
 
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibjNQVbXlJmMotDNVXGscYTNHY8PMAVA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 
@@ -20,13 +19,11 @@
             <hr>
 
             <div class="info-row">
-    <div style="display:flex; align-items:center; gap:8px;">
-	    <label for="date_input" style="white-space:nowrap;">DATE:</label>
-	    <!-- native date input shows a clickable calendar on most browsers -->
-	    <input type="date" id="date_input" placeholder="MM/DD/YYYY" style="padding:6px;">
-	    <!-- little button that focuses the date input (optional UX nicety) -->
-	    <button type="button" id="open_date_picker" title="Open date picker" style="padding:6px 8px;">📅</button>
-	</div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <label for="date_input" style="white-space:nowrap;">DATE:</label>
+                    <input type="date" id="date_input" placeholder="MM/DD/YYYY" style="padding:6px;">
+                    <button type="button" id="open_date_picker" title="Open date picker" style="padding:6px 8px;">📅</button>
+                </div>
 
                 <div>
                     <label for="plate_input">PLATE:</label>
@@ -39,11 +36,14 @@
                     <thead>
                         <tr id="table-header-row">
                             <th></th>
-                            </tr>
+                        </tr>
                     </thead>
                     <tbody id="plate-tbody">
                     </tbody>
                 </table>
+
+                <!-- Shared datalist for pathogen autocomplete suggestions -->
+                <datalist id="pathogen-list"></datalist>
 
                 <div class="control-row">
                     <div class="control">
@@ -97,7 +97,7 @@
 
                 <br>
                 <div class="download-button-container">
-                    <div class="layout-row">
+                    <div class="layout-row" style="justify-content: center;">
                         <div class="layout-col-4">
                             <label for="font_size">Cell Font Size (for Download):</label>
                             <input type="range" id="font_size" min="1" max="8" value="3.5" step="0.1" style="width: 100%;">
@@ -105,13 +105,7 @@
                         <div class="layout-col-4" style="align-self: flex-end; text-align: center;">
                             <button id="downloadImage" class="btn-primary btn-lg">Download as PNG</button>
                         </div>
-                        <div class="layout-col-4" style="align-self: flex-end; text-align: center;">
-                            <button id="refresh_legend">Refresh Legend</button>
-                        </div>
                     </div>
-                    <br>
-                    <h5>Legend:</h5>
-                    <div id="legend_ui"></div>
                 </div>
             </div>
         </div>
