@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State and Constants ---
     const ROWS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     const COLS = Array.from({ length: 12 }, (_, i) => i + 1);
-    let copyBuffer = null; // Will store the copied 2D array
 
     // Comprehensive Pathogen List matching your reference list
     const PATHOGENS = [
@@ -68,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "Stenotrophomonas maltophilia; 300", "Streptococcus dysgalactiae; NCDO 2023",
         "Fusobacterium necrophorum subsp necrophorum; VPI 2891", "Fusobacterium nucleatum subsp nucleatum; VPI 4355",
         "Geotrichum candidum; UAMH 7863", "Malassezia furfur; CBS 1878", "Candida dubliniensis ; CBS 7987",
-        "Meyerozyma guilliermondii; [ATCC 7350, CBS 566, DBVPG 6140, IFO 10279, IGC 2730, JCM 1539, NRRL Y-324]",
+        "Meyerozyma guilliermondii; [ATCC 7350, CBS 566, DBVPG 6140, IFO 10279, IGC 2730, JCM 1539, NRRL Y-11860, VTT C-78086]",
         "Zygosaccharomyces rouxii; 59-4", "Citrobacter koseri; CDC 3613-63", "Arthroderma vanbreuseghemii ; SM 7432",
         "Candida dubliniensis; CBS 7987", "Neisseria gonorrhoeae", "Klebsiella ozaenae / Klebsiella pneumoniae",
         "Acinetobacter baumanii", "Klebsiella  aerogenes", "Klebsiella  pneumoniae", "Providencia  rettgeri",
@@ -85,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Get DOM Elements ---
     const tbody = document.getElementById('plate-tbody');
-    const legendUi = document.getElementById('legend_ui');
     const printableArea = document.getElementById('printable-area');
     const pathogenListDatalist = document.getElementById('pathogen-list');
 
@@ -152,97 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.backgroundColor = colorForValue(v);
     }
 
-    function parseCell(cellStr) {
-        if (!cellStr || typeof cellStr !== 'string') return null;
-        cellStr = cellStr.toUpperCase().trim();
-
-        const match = cellStr.match(/^([A-H])([1-9]|1[0-2])$/);
-        if (!match) return null;
-
-        const row = match[1];
-        const col = parseInt(match[2], 10);
-
-        return {
-            row: row,
-            col: col,
-            r_idx: ROWS.indexOf(row),
-            c_idx: col - 1
-        };
-    }
-
-    function expandSelection(startCellStr, endCellStr) {
-        const s = parseCell(startCellStr);
-        const e = parseCell(endCellStr);
-
-        if (!s || !e) return null;
-
-        const rMin = Math.min(s.r_idx, e.r_idx);
-        const rMax = Math.max(s.r_idx, e.r_idx);
-        const cMin = Math.min(s.c_idx, e.c_idx);
-        const cMax = Math.max(s.c_idx, e.c_idx);
-
-        let selection = [];
-        for (let r = rMin; r <= rMax; r++) {
-            for (let c = cMin; c <= cMax; c++) {
-                selection.push({
-                    row: ROWS[r],
-                    col: COLS[c]
-                });
-            }
-        }
-        return selection;
-    }
-
-    function getCell(row, col) {
-        const el = document.getElementById(`cell_${row}${col}`);
-        return el ? el.value : '';
-    }
-
-    function setCell(row, col, value) {
-        const el = document.getElementById(`cell_${row}${col}`);
-        if (el) {
-            el.value = value;
-            updateCellStyle(el);
-        }
-    }
-
-    // --- Core UI Functions ---
-
-    function updateLegend() {
-        const cells = document.querySelectorAll('.plate-cell');
-        const values = new Set();
-        cells.forEach(el => {
-            if (el.value && el.value.trim() !== '') {
-                values.add(el.value.trim());
-            }
-        });
-
-        legendUi.innerHTML = '';
-
-        if (values.size === 0) {
-            legendUi.innerHTML = '<div>No filled wells</div>';
-            return;
-        }
-
-        const sortedValues = Array.from(values).sort();
-        sortedValues.forEach(k => {
-            const color = colorForValue(k);
-            const item = document.createElement('span');
-            item.style = "display:inline-flex; align-items:center; margin-right:8px; margin-bottom: 4px;";
-
-            const swatch = document.createElement('span');
-            swatch.style = `width:18px; height:18px; border-radius:4px; background:${color}; display:inline-block; margin-right:6px; border:1px solid rgba(0,0,0,0.08);`;
-
-            const label = document.createElement('span');
-            label.style = "font-size:12px; vertical-align:middle;";
-            label.textContent = k;
-
-            item.appendChild(swatch);
-            item.appendChild(label);
-            legendUi.appendChild(item);
-        });
-    }
-
     function createPlateGrid() {
         if (tbody) {
             tbody.innerHTML = '';
@@ -260,12 +167,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     input.className = 'plate-cell';
                     input.id = `cell_${r}${c}`;
 
-                    // Attach autocomplete datalist attribute to every plate cell
                     input.setAttribute('list', 'pathogen-list');
 
                     input.addEventListener('input', () => {
                         updateCellStyle(input);
-                        updateLegend();
                     });
 
                     td.appendChild(input);
@@ -274,157 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 tbody.appendChild(tr);
             });
         }
-    }
-
-    // --- Event Handlers ---
-
-    const copyBtn = document.getElementById('copy_sel_btn');
-    if (copyBtn) {
-        copyBtn.addEventListener('click', () => {
-            const sel = expandSelection(
-                document.getElementById('sel_start').value,
-                document.getElementById('sel_end').value
-            );
-
-            if (!sel) {
-                alert("Invalid selection. Use e.g. A1 and A12.");
-                return;
-            }
-
-            const selRows = [...new Set(sel.map(c => c.row))].sort();
-            const selCols = [...new Set(sel.map(c => c.col))].sort((a,b) => a - b);
-
-            const nRows = selRows.length;
-            const nCols = selCols.length;
-
-            let buffer = Array(nRows).fill(null).map(() => Array(nCols));
-
-            for (let r = 0; r < nRows; r++) {
-                for (let c = 0; c < nCols; c++) {
-                    buffer[r][c] = getCell(selRows[r], selCols[c]);
-                }
-            }
-
-            copyBuffer = buffer;
-            alert(`Copied selection (${nRows} x ${nCols}) to buffer.`);
-        });
-    }
-
-    const pasteBtn = document.getElementById('paste_sel_btn');
-    if (pasteBtn) {
-        pasteBtn.addEventListener('click', () => {
-            if (!copyBuffer) {
-                alert("Copy buffer is empty. Use 'Copy Selection' first.");
-                return;
-            }
-
-            const targ = parseCell(document.getElementById('paste_target').value);
-            if (!targ) {
-                alert("Invalid paste target. Use e.g. A1.");
-                return;
-            }
-
-            const nRows = copyBuffer.length;
-            const nCols = copyBuffer[0].length;
-
-            if (targ.r_idx + nRows > ROWS.length || targ.c_idx + nCols > COLS.length) {
-                alert("Buffer does not fit at target location (out of plate bounds).");
-                return;
-            }
-
-            for (let r = 0; r < nRows; r++) {
-                for (let c = 0; c < nCols; c++) {
-                    const targetRow = ROWS[targ.r_idx + r];
-                    const targetCol = COLS[targ.c_idx + c];
-                    const value = copyBuffer[r][c];
-                    setCell(targetRow, targetCol, value);
-                }
-            }
-
-            updateLegend();
-            alert("Pasted buffer to target location.");
-        });
-    }
-
-    const clearBtn = document.getElementById('clear_sel_btn');
-    if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
-            const sel = expandSelection(
-                document.getElementById('sel_start').value,
-                document.getElementById('sel_end').value
-            );
-
-            if (!sel) {
-                alert("Invalid selection to clear.");
-                return;
-            }
-
-            sel.forEach(cell => {
-                setCell(cell.row, cell.col, "");
-            });
-
-            updateLegend();
-            alert("Selection cleared.");
-        });
-    }
-
-    const patternBtn = document.getElementById('pattern_fill_btn');
-    if (patternBtn) {
-        patternBtn.addEventListener('click', () => {
-            const sel = expandSelection(
-                document.getElementById('sel_start').value,
-                document.getElementById('sel_end').value
-            );
-
-            if (!sel) {
-                alert("Invalid selection for pattern fill.");
-                return;
-            }
-
-            const patternType = document.getElementById('pattern_type').value;
-            const repeatVal = document.getElementById('pattern_repeat_value').value;
-            let currentVal = parseFloat(document.getElementById('pattern_start').value);
-            const stepVal = parseFloat(document.getElementById('pattern_step').value);
-
-            if (patternType === 'Repeat value') {
-                sel.forEach(cell => {
-                    setCell(cell.row, cell.col, repeatVal);
-                });
-            }
-            else if (patternType === 'Sequence row-wise') {
-                const selRows = [...new Set(sel.map(c => c.row))].sort();
-                const selCols = [...new Set(sel.map(c => c.col))].sort((a,b) => a - b);
-
-                for (const r of selRows) {
-                    for (const c of selCols) {
-                        setCell(r, c, String(currentVal));
-                        currentVal += stepVal;
-                    }
-                }
-            }
-            else if (patternType === 'Sequence column-wise') {
-                const selRows = [...new Set(sel.map(c => c.row))].sort();
-                const selCols = [...new Set(sel.map(c => c.col))].sort((a,b) => a - b);
-
-                for (const c of selCols) {
-                    for (const r of selRows) {
-                        setCell(r, c, String(currentVal));
-                        currentVal += stepVal;
-                    }
-                }
-            }
-
-            updateLegend();
-            alert("Pattern applied to selection.");
-        });
-    }
-
-    const refreshLegendBtn = document.getElementById('refresh_legend');
-    if (refreshLegendBtn) {
-        refreshLegendBtn.addEventListener('click', () => {
-            updateLegend();
-            alert("Legend refreshed.");
-        });
     }
 
     // --- Download Handler ---
@@ -438,13 +192,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const cssFontSize = (fontSizeVal * 2 + 4) + 'pt';
 
             printableArea.innerHTML = '';
-            printableArea.style.position = 'absolute';
-            printableArea.style.left = '-9999px';
+            // Temporarily make the area visible to the layout engine offscreen
+            printableArea.style.display = 'block';
+            printableArea.style.position = 'fixed';
+            printableArea.style.left = '0';
             printableArea.style.top = '0';
-            printableArea.style.visibility = 'visible';
+            printableArea.style.zIndex = '99999';
             printableArea.style.background = '#ffffff';
             printableArea.style.padding = '12px';
-            printableArea.style.maxWidth = '1200px';
+            printableArea.style.width = '1000px';
 
             const h2 = document.createElement('h2');
             h2.textContent = '🧬 BioPathogenix';
@@ -504,50 +260,11 @@ document.addEventListener('DOMContentLoaded', () => {
             printTable.appendChild(printTbody);
             printableArea.appendChild(printTable);
 
-            const legendItems = legendUi.querySelectorAll('span');
-            if (legendItems.length > 0) {
-                const legendTitle = document.createElement('h5');
-                legendTitle.textContent = 'Legend:';
-                printableArea.appendChild(legendTitle);
-
-                legendItems.forEach(item => {
-                    const clone = document.createElement('div');
-                    clone.style.display = 'inline-flex';
-                    clone.style.alignItems = 'center';
-                    clone.style.marginRight = '8px';
-                    clone.style.marginBottom = '4px';
-                    clone.style.marginTop = '6px';
-
-                    const swatch = item.querySelector('span');
-                    const label = item.querySelector('span:last-child');
-
-                    const sw = document.createElement('span');
-                    if (swatch) {
-                        sw.style = swatch.style.cssText;
-                    } else {
-                        sw.style = 'width:18px; height:18px; border-radius:4px; background:#ffffff; display:inline-block; margin-right:6px; border:1px solid rgba(0,0,0,0.08);';
-                    }
-                    sw.style.display = 'inline-block';
-                    sw.style.marginRight = '6px';
-                    sw.style.width = '18px';
-                    sw.style.height = '18px';
-                    sw.style.borderRadius = '4px';
-
-                    const lbl = document.createElement('span');
-                    lbl.textContent = label ? label.textContent : '';
-                    lbl.style.fontSize = '12px';
-                    lbl.style.verticalAlign = 'middle';
-
-                    clone.appendChild(sw);
-                    clone.appendChild(lbl);
-                    printableArea.appendChild(clone);
-                });
-            }
-
             setTimeout(() => {
                 if (typeof html2canvas === 'undefined') {
                     console.error('html2canvas is not loaded.');
                     alert('html2canvas library not loaded.');
+                    printableArea.style.display = 'none';
                     return;
                 }
 
@@ -565,17 +282,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.body.appendChild(link);
                     link.click();
                     link.remove();
+                    printableArea.style.display = 'none';
                 })
                 .catch(err => {
                     console.error('Error generating canvas:', err);
                     alert('Error generating image.');
+                    printableArea.style.display = 'none';
                 });
-            }, 600);
+            }, 300);
         });
     }
 
     // --- Initial App Load ---
     createPlateGrid();
-    updateLegend();
 
 });
