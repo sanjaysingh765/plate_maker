@@ -192,3 +192,6 @@ button.btn-lg { padding: 10px 16px; font-size: 16px; }
 #open_date_picker {
   cursor: pointer;
 }
+#printable-area {
+    display: none;
+}
